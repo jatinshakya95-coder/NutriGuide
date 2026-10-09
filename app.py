@@ -35,6 +35,8 @@ if "nutrition_plan" not in st.session_state:
     st.session_state.nutrition_plan = None
 if "profile" not in st.session_state:
     st.session_state.profile = {}
+if "api_key" not in st.session_state:
+    st.session_state.api_key = ""
 
 # ---------------------------------------------------------------------------
 # Sidebar – API key + user profile form
@@ -49,8 +51,12 @@ with st.sidebar:
         "Enter your Groq API Key",
         type="password",
         placeholder="gsk_...",
+        value=st.session_state.api_key,
         help="Your key is used only for this session and is never stored or logged.",
     )
+    # Persist key in session state so it survives st.rerun() calls
+    if api_key:
+        st.session_state.api_key = api_key
     st.caption("🔒 Your API key is not saved or logged.")
 
     st.markdown("---")
@@ -126,7 +132,7 @@ with st.sidebar:
 # ---------------------------------------------------------------------------
 st.title("🥗 NutriGuide – Personalised Nutrition AI Agent")
 st.caption(
-    "Powered by Groq · Model: qwen/qwen3.8-27b · "
+    "Powered by Groq · Model: llama-3.3-70b-versatile · "
     "Agentic AI for personalised daily nutrition planning"
 )
 st.markdown("---")
@@ -188,7 +194,7 @@ else:
         st.markdown("---")
         if st.button("🔁 Regenerate Nutrition Plan", key="regen_btn"):
             with st.spinner("🤖 Regenerating your plan…"):
-                plan = generate_nutrition_plan(api_key, profile)
+                plan = generate_nutrition_plan(st.session_state.api_key, profile)
             st.session_state.nutrition_plan = plan
             st.rerun()
 
@@ -220,7 +226,7 @@ else:
         # Chat input
         user_input = st.chat_input("Type your nutrition question here…")
         if user_input:
-            if not api_key.strip():
+            if not st.session_state.api_key.strip():
                 st.error("Please enter your Groq API key in the sidebar to chat.")
             else:
                 # Add user message to display history
@@ -231,7 +237,7 @@ else:
                 # Get agent response
                 with st.spinner("NutriGuide is thinking…"):
                     reply = chat_with_agent(
-                        api_key=api_key,
+                        api_key=st.session_state.api_key,
                         profile=profile,
                         conversation_history=st.session_state.llm_history,
                         user_message=user_input,

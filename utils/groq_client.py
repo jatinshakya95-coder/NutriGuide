@@ -5,8 +5,8 @@ The API key is accepted at call-time and is NEVER stored or logged.
 
 from groq import Groq
 
-# qwen/qwen3.8-27b — confirmed live Groq model (matches original project spec)
-MODEL = "qwen/qwen3.8-27b"
+# llama-3.3-70b-versatile — reliable Groq free-tier model
+MODEL = "llama-3.3-70b-versatile"
 MAX_TOKENS = 900                  # free-tier OTPM limit is 1000
 
 
